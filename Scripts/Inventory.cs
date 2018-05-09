@@ -17,15 +17,15 @@ public class Inventory : MonoBehaviour {
 		
 	}
 
-    public vp_ItemType[] AllTypes()
+    public ItemType[] AllTypes()
     {
-        vp_ItemType[] c = new vp_ItemType[items.Length];
+        ItemType[] c = new ItemType[items.Length];
         for (int i = 0; i < items.Length; i++)
             c[i] = items[i].itemType;
         return c;
     }
 
-    public float GetItems(vp_ItemType t, float ammount)
+    public float GetItems(ItemType t, float ammount)
     {
         foreach(ItemSlot i in items)
             if(i.itemType == t)
@@ -38,12 +38,12 @@ public class Inventory : MonoBehaviour {
         return 0f;
     }
 
-    public float AddItems(vp_ItemType t, float amount)
+    public float AddItems(ItemType t, float amount)
     {
         foreach (ItemSlot i in items)
             if (i.itemType == t)
             {
-                if ((i.count.RuntimeValue * t.Space) + (amount * t.Space) > max)
+                if ((i.count.RuntimeValue * t.size) + (amount * t.size) > max)
                 {
                     return amount;
                 }
@@ -59,7 +59,7 @@ public class Inventory : MonoBehaviour {
         float fill = 0f;
         foreach (ItemSlot i in items)
         {
-            fill += (i.count.RuntimeValue * i.itemType.Space);
+            fill += (i.count.RuntimeValue * i.itemType.size);
         }
         if (fill == 0)
             return 0;
@@ -72,7 +72,7 @@ public class Inventory : MonoBehaviour {
     [System.Serializable]
     public class ItemSlot
     {
-        public vp_ItemType itemType;
+        public ItemType itemType;
         public FloatVariable count;
 
     }

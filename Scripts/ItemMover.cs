@@ -8,7 +8,7 @@ public class ItemMover : MonoBehaviour {
     public Inventory destination;
     public float transferRate = 1f;
 
-    private vp_ItemType[] types;
+    private ItemType[] types;
 	// Use this for initialization
 	void Start () {
         types = source.AllTypes();
@@ -18,7 +18,7 @@ public class ItemMover : MonoBehaviour {
 	void Update () {
         if (active.RuntimeValue)
         {
-            foreach(vp_ItemType t in types)
+            foreach(ItemType t in types)
             {
                 float amount = source.GetItems(t, Time.deltaTime * transferRate);
                 Debug.Log(amount);
