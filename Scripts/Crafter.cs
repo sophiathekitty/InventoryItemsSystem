@@ -16,7 +16,7 @@ public class Crafter : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         // if the can't craft
-        if (lockCraft != null && lockCraft == false)
+        if (lockCraft != null && lockCraft.RuntimeValue == false)
             return;
 
         // go through all the recipies and work on crafting them
@@ -30,6 +30,7 @@ public class Crafter : MonoBehaviour {
     public class CrafterSlot
     {
         public CraftRecipe recipe;
+        [System.NonSerialized]
         public float timeCrafting;
         [System.NonSerialized]
         public bool crafting;
