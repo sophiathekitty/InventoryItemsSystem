@@ -25,15 +25,15 @@ public class Inventory : MonoBehaviour {
         return c;
     }
 
-    public float GetItems(ItemType t, float ammount)
+    public float GetItems(ItemType t, float amount)
     {
         foreach(ItemSlot i in items)
             if(i.itemType == t)
             {
-                if (ammount > i.count.RuntimeValue)
-                    ammount = i.count.RuntimeValue;
-                i.count.RuntimeValue -= ammount;
-                return ammount;
+                if (amount > i.count.RuntimeValue)
+                    amount = i.count.RuntimeValue;
+                i.count.RuntimeValue -= amount;
+                return amount;
             }
         return 0f;
     }
@@ -53,7 +53,16 @@ public class Inventory : MonoBehaviour {
 
         return amount;
     }
-
+    public void RemoveItems(ItemType t, float amount)
+    {
+        foreach (ItemSlot i in items)
+            if (i.itemType == t)
+            {
+                if (amount > i.count.RuntimeValue)
+                   i.count.RuntimeValue = 0;
+                i.count.RuntimeValue -= amount;
+            }
+    }
     public float fillPercent()
     {
         float fill = 0f;

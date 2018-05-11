@@ -21,9 +21,7 @@ public class ItemMover : MonoBehaviour {
             foreach(ItemType t in types)
             {
                 float amount = source.GetItems(t, Time.deltaTime * transferRate);
-                Debug.Log(amount);
                 float overflow = destination.AddItems(t, amount);
-                Debug.Log(overflow);
                 if (overflow > 0f)
                     source.AddItems(t, overflow);
             }
