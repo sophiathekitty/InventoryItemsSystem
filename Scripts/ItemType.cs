@@ -10,7 +10,10 @@ public class ItemType : ScriptableObject {
     public string plural_name;
     public string description;
     public Sprite sprite;
+    public GameObject prefab;
+    public List<ItemTag> tags;
     public float size = 1f;
+    public float max_stack = 100f;
 
     public string Name_block
     {

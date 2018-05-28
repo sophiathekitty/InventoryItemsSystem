@@ -2,18 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Crafter : MonoBehaviour {
+public class Crafter : ScriptableObject {
     public CrafterSlot[] recipes;
     public BoolVariable lockCraft;   // lock/unlock crafter. if missing assume unlocked
     private bool doCraft;   // currently crafting
     public Inventory inventory;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
 	void Update () {
         // if the can't craft
         if (lockCraft != null && lockCraft.RuntimeValue == false)

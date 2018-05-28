@@ -2,20 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemMover : MonoBehaviour {
+[CreateAssetMenu(menuName = "Items/Mover")]
+public class ItemMover : ScriptableObject {
     public BoolVariable active;
     public Inventory source;
     public Inventory destination;
     public float transferRate = 1f;
 
-    private ItemType[] types;
-	// Use this for initialization
-	void Start () {
-        types = source.AllTypes();
-	}
+    public List<ItemType> types;
 	
 	// Update is called once per frame
-	void Update () {
+	public void Update () {
         if (active.RuntimeValue)
         {
             foreach(ItemType t in types)
@@ -23,7 +20,9 @@ public class ItemMover : MonoBehaviour {
                 float amount = source.GetItems(t, Time.deltaTime * transferRate);
                 float overflow = destination.AddItems(t, amount);
                 if (overflow > 0f)
-                    source.AddItems(t, overflow);
+                    overflow = source.AddItems(t, overflow);
+                if (overflow > 0f)
+                    Debug.Log("["+name+"]Mover Overflow: "+overflow.ToString());
             }
         }
 	}

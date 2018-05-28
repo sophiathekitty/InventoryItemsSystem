@@ -2,37 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Inventory : MonoBehaviour {
+[CreateAssetMenu(menuName = "Items/Inventory")]
+public class Inventory : SavableVariable, ISerializationCallbackReceiver {
 
-    public ItemSlot[] items;
+    public List<ItemSlot> default_items = new List<ItemSlot>();
+    [System.NonSerialized()]
+    public List<ItemSlot> items = new List<ItemSlot>();
     public float max;
-
-	// Use this for initialization
-	void Start () {
-
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
-    public ItemType[] AllTypes()
-    {
-        ItemType[] c = new ItemType[items.Length];
-        for (int i = 0; i < items.Length; i++)
-            c[i] = items[i].itemType;
-        return c;
-    }
+    public List<ItemTag> canHoldTags = new List<ItemTag>();
+    public List<ItemType> CanHoldItems = new List<ItemType>();
 
     public float GetItems(ItemType t, float amount)
     {
         foreach(ItemSlot i in items)
             if(i.itemType == t)
             {
-                if (amount > i.count.RuntimeValue)
-                    amount = i.count.RuntimeValue;
-                i.count.RuntimeValue -= amount;
+                if (amount > i.count)
+                    amount = i.count;
+                i.count -= amount;
                 return amount;
             }
         return 0f;
@@ -40,14 +27,17 @@ public class Inventory : MonoBehaviour {
 
     public float AddItems(ItemType t, float amount)
     {
+        if (!CanHoldItems.Contains(t))
+            return amount;
+
         foreach (ItemSlot i in items)
             if (i.itemType == t)
             {
-                if ((i.count.RuntimeValue * t.size) + (amount * t.size) > max)
+                if ((i.count * t.size) + (amount * t.size) > max)
                 {
                     return amount;
                 }
-                i.count.RuntimeValue += amount;
+                i.count += amount;
                 return 0f;
             }
 
@@ -58,17 +48,18 @@ public class Inventory : MonoBehaviour {
         foreach (ItemSlot i in items)
             if (i.itemType == t)
             {
-                if (amount > i.count.RuntimeValue)
-                   i.count.RuntimeValue = 0;
-                i.count.RuntimeValue -= amount;
+                if (amount > i.count)
+                   i.count = 0;
+                i.count -= amount;
             }
     }
-    public float fillPercent()
+
+    public float FillPercent()
     {
         float fill = 0f;
         foreach (ItemSlot i in items)
         {
-            fill += (i.count.RuntimeValue * i.itemType.size);
+            fill += (i.count * i.itemType.size);
         }
         if (fill == 0)
             return 0;
@@ -78,11 +69,121 @@ public class Inventory : MonoBehaviour {
         return p;
     }
 
+    public float FillPercentDefaults()
+    {
+        float fill = 0f;
+        foreach (ItemSlot i in default_items)
+        {
+            if(i.itemType != null)
+                fill += (i.count * i.itemType.size);
+        }
+        if (fill == 0)
+            return 0;
+        float p = fill / max;
+        return p;
+    }
+
+    public float MaxItemCount(ItemType type)
+    {
+        //float adjustedMax = max / type.size;
+        float spaceAvailable = (max * FillPercent()) / type.size;
+        float spaceUsed = 0;
+        foreach (ItemSlot slot in items)
+        {
+            if (slot.itemType == type)
+                spaceUsed = slot.count * type.size;
+        }
+        return spaceUsed + spaceAvailable;
+    }
+
+    public float MaxItemCountDefaults(ItemType type)
+    {
+        if (type == null)
+            return 0f;
+        float spaceAvailable = (max - (max * FillPercentDefaults())) / type.size;
+        float spaceUsed = 0;
+        foreach (ItemSlot slot in default_items)
+        {
+            if (slot.itemType == type)
+            {
+                spaceUsed += slot.count * type.size;
+                Debug.Log(slot.itemType.name + ": " + spaceUsed.ToString());
+            }
+                
+        }
+        if (spaceUsed + spaceAvailable > type.max_stack)
+            return type.max_stack;
+        return spaceUsed + spaceAvailable;
+    }
+
+    public override string OnSaveData()
+    {
+        if (items.Count < 1)
+            return "";
+        string data = items[0].ToString();
+        for(int i = 1; i < items.Count; i++)
+        {
+            data += "|"+items[i].ToString();
+        }
+        return data;
+    }
+
+    public override void OnLoadData(string data)
+    {
+        if (data == "")
+            return;
+
+        items.Clear();
+        string[] itms = data.Split('|');
+        foreach (string itm in itms)
+        {
+            items.Add(new ItemSlot(itm,CanHoldItems));
+        }
+    }
+
+    public void OnBeforeSerialize()
+    {
+        //throw new System.NotImplementedException();
+    }
+
+    public void OnAfterDeserialize()
+    {
+        items.Clear();
+        foreach(ItemSlot slot in default_items)
+        {
+            items.Add(new ItemSlot(slot));
+        }
+    }
+
     [System.Serializable]
     public class ItemSlot
     {
         public ItemType itemType;
-        public FloatVariable count;
-
+        public float count;
+        public ItemSlot() { }
+        public ItemSlot(ItemSlot source)
+        {
+            itemType = source.itemType;
+            count = source.count;
+        }
+        public ItemSlot(ItemType type, float amount = 1)
+        {
+            itemType = type;
+            count = amount;
+        }
+        public ItemSlot(string itm, List<ItemType> types)
+        {
+            string[] data = itm.Split(',');
+            foreach(ItemType type in types)
+            {
+                if (type.GetInstanceID().ToString() == data[0])
+                    itemType = type;
+            }
+            count = float.Parse(data[1]);
+        }
+        public override string ToString()
+        {
+            return itemType.GetInstanceID().ToString() + "," + count.ToString();
+        }
     }
 }
