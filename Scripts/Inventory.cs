@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SharedVariableSaveSystem;
 
 [CreateAssetMenu(menuName = "Items/Inventory")]
 public class Inventory : SavableVariable, ISerializationCallbackReceiver {
@@ -153,6 +154,11 @@ public class Inventory : SavableVariable, ISerializationCallbackReceiver {
         {
             items.Add(new ItemSlot(slot));
         }
+    }
+
+    public override void OnClearSave()
+    {
+        throw new System.NotImplementedException();
     }
 
     [System.Serializable]

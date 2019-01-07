@@ -36,6 +36,8 @@ public class ItemTypeEditor : Editor {
         GUILayout.Label("Description:");
         itemType.description = GUILayout.TextArea(itemType.description);
 
+        if(itemType.tags == null)
+            itemType.tags = new List<ItemTag>();
         // show tags
         GUILayout.BeginHorizontal();
         for(int t = 0; t < itemType.tags.Count; t++)
