@@ -50,7 +50,7 @@ public class Inventory : SavableVariable, ISerializationCallbackReceiver {
             if (i.itemType == t)
             {
                 if (amount > i.count)
-                   i.count = 0;
+                    i.count = 0;
                 i.count -= amount;
             }
     }

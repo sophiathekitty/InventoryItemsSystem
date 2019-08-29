@@ -13,6 +13,8 @@ public class ItemDatabaseEditor : Editor {
         base.OnInspectorGUI();
         if (GUILayout.Button("Find Item Types"))
         {
+            if(database.types == null)
+                database.types = new List<ItemType>();
             database.types.Clear();
             string[] items = AssetDatabase.FindAssets("t:ItemType");
             foreach (string z in items)

@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[CreateAssetMenu(menuName = "Items/Crafter")]
 public class Crafter : ScriptableObject {
     public CrafterSlot[] recipes;
     public BoolVariable lockCraft;   // lock/unlock crafter. if missing assume unlocked
     private bool doCraft;   // currently crafting
     public Inventory inventory;
 
-	void Update () {
+	public void DoUpdate (float deltaTime) {
         // if the can't craft
         if (lockCraft != null && lockCraft.RuntimeValue == false)
             return;
 
-        // go through all the recipies and work on crafting them
+        // go through all the recipes and work on crafting them
         foreach (CrafterSlot recipe in recipes)
         {
-            recipe.Craft(inventory, Time.deltaTime);
+            recipe.Craft(inventory, deltaTime);
         }
 	}
 
@@ -28,7 +29,7 @@ public class Crafter : ScriptableObject {
         public float timeCrafting;
         [System.NonSerialized]
         public bool crafting;
-        // what percent of the craf time does this delta time represent
+        // what percent of the craft time does this delta time represent
         public float TimePercent(float deltaTime)
         {
                 return deltaTime / recipe.craft_time;

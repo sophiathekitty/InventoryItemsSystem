@@ -12,12 +12,12 @@ public class ItemMover : ScriptableObject {
     public List<ItemType> types;
 	
 	// Update is called once per frame
-	public void Update () {
+	public void DoUpdate (float deltaTime) {
         if (active.RuntimeValue)
         {
             foreach(ItemType t in types)
             {
-                float amount = source.GetItems(t, Time.deltaTime * transferRate);
+                float amount = source.GetItems(t, deltaTime * transferRate);
                 float overflow = destination.AddItems(t, amount);
                 if (overflow > 0f)
                     overflow = source.AddItems(t, overflow);
